@@ -1,39 +1,32 @@
-from dotenv import load_dotenv
-from langchain_core.agents import AgentFinish
-from langgraph.graph import StateGraph, END
+import streamlit as st
 
-from nodes import execute_tools, run_agent_reasoning_engine
-from state import AgentState
+from dotenv import load_dotenv
+from src.graph_function import setup_react_graph
 
 load_dotenv()
 
-AGENT_REASON = "agent_reason"
-ACT = "act"
 
+def main():
+    st.title("Hello ReAct with LangGraph")
 
-def should_continue(state: AgentState) -> str:
-    if isinstance(state["agent_outcome"], AgentFinish):
-        return END
-    else:
-        return ACT
+    # get user input
+    user_input = st.text_input(
+        "Enter your query:",
+        value="What is the weather in San Francisco? Write it and then Triple it."
+    )
 
+    if st.button("Submit"):
+        with (st.spinner("Processing...")):
+            flow = setup_react_graph()
+            app = flow.compile()
+            res = app.invoke(
+                input={
+                    "input": user_input
+                }
+            )
+            output = res["agent_outcome"].return_values["output"]
+            st.write(output)
 
-flow = StateGraph(AgentState)
-
-flow.add_node(AGENT_REASON, run_agent_reasoning_engine)
-flow.set_entry_point(AGENT_REASON)
-flow.add_node(ACT, execute_tools)
-flow.add_conditional_edges(AGENT_REASON, should_continue)
-flow.add_edge(ACT, AGENT_REASON)
-
-app = flow.compile()
-app.get_graph().draw_mermaid_png(output_file_path="graph.png")
 
 if __name__ == "__main__":
-    print("Hello ReAct with LangGraph")
-    res = app.invoke(
-        input={
-            "input": "what is the weather in San Francisco? Write it and then Triple it"
-        }
-    )
-    print(res["agent_outcome"].return_values["output"])
+    main()
