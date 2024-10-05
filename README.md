@@ -39,7 +39,7 @@ Simple ReactAgent where in first step it looking something in internet using TAV
 #### 5. ReactAgent Algorithm
 
 Pipeline is simple ReactAgent where in first step he is looking for info in internet and then triple this output.
-![graph.png](png/graph.png)
+![graph.png](png/graph_readme.png)
 
 #### 6. LangGraph Studio
 In repo is [langgraph.json](langgraph.json) which is compatible with LangGraph Studio: https://blog.langchain.dev/langgraph-studio-the-first-agent-ide/
